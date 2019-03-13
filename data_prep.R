@@ -6,7 +6,6 @@ bad_files = list.files("cell_images/Parasitized",full.names = TRUE,pattern = "\\
 good_files = list.files("cell_images/Uninfected",full.names = TRUE,pattern = "\\.png$")
 test_files = list.files("no",full.names = TRUE)
 
-bad_files
 
 #function to covnert images to 1d vectors
 flatten <- function(imgname,width=50,height=50,dir){
