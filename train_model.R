@@ -29,7 +29,7 @@ test_y <- select(test, "label")
 
 #repeat for training dataset
 train_x<-select(train, -"label")
-train_y <- select(train, "label")
+train_y <- as.matrix(select(train, "label"))
 
 #got to reshape it first for the CNN to understand c(number, dim, dim, channels)
 train_array=train_x
@@ -52,7 +52,7 @@ model %>%
   #first layer is the convultion layer
   #remember that our images were 50 x 50, grayscale so the input shape would be
   #50 x 50 x 1. If they were RGB( having colour) it would be 50 x 50 x3
-  layer_conv_2d(64,kernel_size = c(3,3), activation = 'relu') %>%
+  layer_conv_2d(64,kernel_size = c(3,3), activation = 'relu', input_shape = c(50,50,1)) %>%
   layer_max_pooling_2d(pool_size = c(2, 2)) %>%
   layer_conv_2d(32,kernel_size = c(3,3), activation = 'relu') %>%
   layer_max_pooling_2d(pool_size = c(2, 2)) %>%
@@ -61,8 +61,8 @@ model %>%
   layer_flatten() %>%
   
   #final layer must decide the range of probability  0 (bad cells) or towards 1 (goods cells)
-  #layer_dense(units = 8, activation = 'relu', input_shape = c(4)) %>% 
-  layer_dense(units = 1, activation = 'softmax')
+  layer_dense(units = 8, activation = 'relu') %>% 
+  layer_dense(units = 1, activation = 'sigmoid')
 summary(model)
 
 #We compile the model. Since this is a binary classification problem, we use
@@ -76,11 +76,16 @@ model %>% compile(
 
 #fit the model with 5 fold CV
 model %>% fit(
-  as.matrix(train_array), #need to make matrix instead of dataframe type
-  as.matrix(train_y), 
+  train_array,
+  train_y, 
   epochs = 5, 
   batch_size = 5, 
   validation_split = 0.2,
   verbose= 1 #see progress bar
 )
 
+# Save model
+save(model, file = "CNNmodel.RData")
+
+dim(train_x)
+dim(train_y)
