@@ -41,5 +41,5 @@ save(total_feature_matrix,file="feature_matrix.Rda")
 
 dim(bad_feature_matrix)
 dim(good_feature_matrix)
-
+dim(total_feature_matrix)
 
