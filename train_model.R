@@ -29,22 +29,23 @@ test_y <- select(test, "label")
 
 #repeat for training dataset
 train_x<-select(train, -"label")
-train_y <- as.matrix(select(train, "label"))
+train_y <- as.matrix(select(train, "label")) #keras can't take in dataframe
 
 #got to reshape it first for the CNN to understand c(number, dim, dim, channels)
-train_array=train_x
-train_array = as.matrix(train_array)
+train_array <- as.matrix(train_x)
 train_array <- array_reshape(train_array, c(nrow(train_array),50, 50, 1))
+
+test_array<-as.matrix(test_x)
+test_array <- array_reshape(test_array,c(nrow(test_array),50, 50, 1))
+
 #train_array <- reshape(x, shape(-1, 50, 50, 1))
 #checking if split done right 
 dim(train_y)
-
 dim(test_x)
 dim(test_y)
 dim(train_array)
 
-
-# Initialize a sequential model following the example of datacamp
+# Initialize a sequential model 
 model <- keras_model_sequential()
 
 # Add layers to the model
@@ -52,40 +53,44 @@ model %>%
   #first layer is the convultion layer
   #remember that our images were 50 x 50, grayscale so the input shape would be
   #50 x 50 x 1. If they were RGB( having colour) it would be 50 x 50 x3
-  layer_conv_2d(64,kernel_size = c(3,3), activation = 'relu', input_shape = c(50,50,1)) %>%
+  layer_conv_2d(32,kernel_size = c(3,3), activation = 'relu', input_shape = c(50,50,1)) %>%
   layer_max_pooling_2d(pool_size = c(2, 2)) %>%
-  layer_conv_2d(32,kernel_size = c(3,3), activation = 'relu') %>%
+  layer_conv_2d(16,kernel_size = c(3,3), activation = 'relu') %>%
   layer_max_pooling_2d(pool_size = c(2, 2)) %>%
   
   #flatten layer serves as the connection to the dense layer
   layer_flatten() %>%
-  
-  #final layer must decide the range of probability  0 (bad cells) or towards 1 (goods cells)
+  #hidden layer
   layer_dense(units = 8, activation = 'relu') %>% 
+  #final layer must decide the range of probability  0 (bad cells) or towards 1 (goods cells)
+  #we use sigmoid cos it gives value btw 0 and 1
   layer_dense(units = 1, activation = 'sigmoid')
 summary(model)
 
 #We compile the model. Since this is a binary classification problem, we use
 #binary_crossentropy. Multiple categorical? categorical_crossentropy
-
 model %>% compile(
   loss = 'binary_crossentropy',
   optimizer = 'adam',
   metrics = 'accuracy'
 )
 
-#fit the model with 5 fold CV
-model %>% fit(
+#fit the model 
+history <- model %>% fit(
   train_array,
   train_y, 
-  epochs = 5, 
-  batch_size = 5, 
+  epochs = 20, 
+  batch_size = 10, 
   validation_split = 0.2,
   verbose= 1 #see progress bar
 )
 
 # Save model
-save(model, file = "CNNmodel.RData")
+model %>% save_model_hdf5("CNN.h5")
 
-dim(train_x)
-dim(train_y)
+plot(model)
+dim(test_array)
+dim(train_array)
+predictions <-  predict_classes(model, test_array)
+probabilities <- predict_proba(model, test_array)
+
