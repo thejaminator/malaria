@@ -3,10 +3,12 @@ setwd("C:/Users/user/Google Drive/unilaptop/r projects/malaria")
 #load the file we saved from the data_prep script
 df = load(file="feature_matrix.Rda")
 
+install.packages("stringi")
 #you will probably have to install these packages
 library(reticulate)
 library(dplyr)
 library(keras)
+library(stringi)
 library(pbapply)
 
 set.seed(100)
@@ -61,7 +63,7 @@ model %>%
   #flatten layer serves as the connection to the dense layer
   layer_flatten() %>%
   #hidden layer
-  layer_dense(units = 8, activation = 'relu') %>% 
+  layer_dense(units = 16, activation = 'relu') %>% 
   #final layer must decide the range of probability  0 (bad cells) or towards 1 (goods cells)
   #we use sigmoid cos it gives value btw 0 and 1
   layer_dense(units = 1, activation = 'sigmoid')
@@ -79,7 +81,7 @@ model %>% compile(
 history <- model %>% fit(
   train_array,
   train_y, 
-  epochs = 20, 
+  epochs = 10, 
   batch_size = 10, 
   validation_split = 0.2,
   verbose= 1 #see progress bar
@@ -87,10 +89,9 @@ history <- model %>% fit(
 
 # Save model
 model %>% save_model_hdf5("CNN.h5")
+# Save test images for analysis
+test_array %>%save(file="test_array.Rda")
 
-plot(model)
-dim(test_array)
-dim(train_array)
-predictions <-  predict_classes(model, test_array)
-probabilities <- predict_proba(model, test_array)
+
+
 
