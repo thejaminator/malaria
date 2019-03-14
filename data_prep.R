@@ -24,15 +24,15 @@ flatten <- function(imgname,width=50,height=50,dir){
 bad_df <- pblapply(bad_files,flatten)
 bad_feature_matrix <- do.call(rbind, bad_df)
 bad_feature_matrix <- as.data.frame(bad_feature_matrix)
-#label bad cells as 0
-bad_feature_matrix$label <- 0
+#label bad cells as 1
+bad_feature_matrix$label <- 1
 
 #repeat for good cells
 good_df <- pblapply(good_files,flatten)
 good_feature_matrix <- do.call(rbind, good_df)
 good_feature_matrix <- as.data.frame(good_feature_matrix)
-#label good cells as 1
-good_feature_matrix$label <- 1
+#label good cells as 0
+good_feature_matrix$label <- 0
 
 #concat the dataframes
 total_feature_matrix <- rbind(bad_feature_matrix,good_feature_matrix)

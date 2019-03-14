@@ -1,15 +1,14 @@
 setwd("C:/Users/user/Google Drive/unilaptop/r projects/malaria")
 
 #load the file we saved from the data_prep script
-df = load(file="feature_matrix.Rda")
-
-install.packages("stringi")
+load(file="feature_matrix.Rda")
 #you will probably have to install these packages
 library(reticulate)
 library(dplyr)
 library(keras)
 library(stringi)
 library(pbapply)
+library(caTools)
 
 set.seed(100)
 
@@ -19,10 +18,17 @@ use_condaenv("rstudio", conda="auto")
 py_config()
 
 #train test split
-# 70% train, 30% test split
-train<-sample_frac(total_feature_matrix, 0.7)
-sid<-as.numeric(rownames(train)) # because rownames() returns character
-test<-total_feature_matrix[-sid,]
+# 70% train, 30% test split. IMPT TO RANDOMIZE OR ELSE ALL YOUR TEST DATA BELONGS TO ONE TYPE 
+#data <- data[sample(1:nrow(data)), ]
+
+
+train_index <- sample(1:nrow(total_feature_matrix), 0.8 * nrow(total_feature_matrix))
+test_index <- setdiff(1:nrow(total_feature_matrix), train_index)
+
+train = total_feature_matrix[train_index,]
+test = total_feature_matrix[test_index,]
+
+
 
 # in data_prep we added a label to the data frame, now we need to seperate into x and y
 #x is your training variable, y is the target variable to predict 
@@ -31,8 +37,9 @@ test_y <- select(test, "label")
 
 #repeat for training dataset
 train_x<-select(train, -"label")
-train_y <- as.matrix(select(train, "label")) #keras can't take in dataframe
+train_y <- as.matrix(select(train, "label")) #keras can't take in dataframe so you got to change it
 
+dim(train)
 #got to reshape it first for the CNN to understand c(number, dim, dim, channels)
 train_array <- as.matrix(train_x)
 train_array <- array_reshape(train_array, c(nrow(train_array),50, 50, 1))
@@ -89,8 +96,14 @@ history <- model %>% fit(
 
 # Save model
 model %>% save_model_hdf5("CNN.h5")
-# Save test images for analysis
+
+# Save model history
+save(history,file="train_history.Rda")
+plot(history)
+# Save test images' data for analysis
 test_array %>%save(file="test_array.Rda")
+# Save ground truth for comparison later
+save(test_y,file="ground_truth.Rda")
 
 
 
