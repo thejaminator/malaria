@@ -47,13 +47,15 @@ for(i in 1:length(random)){
 dim(predictions)
 dim(test_y)
 class(predictions)
-class(test_y)
+class(test_y$label)
+
 predictions_factor = as.factor(predictions)
+ground_truth_factor=as.factor(test_y$label)
 
-#cant turn into factor??????
-ground_truth=as.vector(test_y)
-ground_truth=as.factor(ground_truth)
-predictions_factor
-ground_truth
+confusionMatrix(predictions_factor, ground_truth_factor, positive = NULL, dnn = c("Prediction", "Reference"))
 
-confusionMatrix(predictions_factor, ground_truth, positive = NULL, dnn = c("Prediction", "Reference"))
+#
+#threshold = c(0.1,0.2,0.3,0.4,0.5)
+#for(t in threshold){
+  
+#}

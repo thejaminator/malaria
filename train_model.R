@@ -19,8 +19,7 @@ py_config()
 
 #train test split
 # 70% train, 30% test split. IMPT TO RANDOMIZE OR ELSE ALL YOUR TEST DATA BELONGS TO ONE TYPE 
-#data <- data[sample(1:nrow(data)), ]
-
+total_feature_matrix <- total_feature_matrix[sample(1:nrow(total_feature_matrix)), ]
 
 train_index <- sample(1:nrow(total_feature_matrix), 0.8 * nrow(total_feature_matrix))
 test_index <- setdiff(1:nrow(total_feature_matrix), train_index)
