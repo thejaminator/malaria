@@ -2,6 +2,9 @@ setwd("C:/Users/user/Google Drive/unilaptop/r projects/malaria")
 
 #load the file we saved from the data_prep script
 load(file="feature_matrix.Rda")
+#i saved as csv to upload to google colab
+#write.csv(total_feature_matrix, 'model.csv')
+
 #you will probably have to install these packages
 library(reticulate)
 library(dplyr)
@@ -96,11 +99,12 @@ history <- model %>% fit(
 # Save model
 model %>% save_model_hdf5("CNN.h5")
 
+plot(history)
 # Save model history
 save(history,file="train_history.Rda")
 plot(history)
 # Save test images' data for analysis
-test_array %>%save(file="test_array.Rda")
+save(test_array,file="test_array.Rda")
 # Save ground truth for comparison later
 save(test_y,file="ground_truth.Rda")
 

@@ -1,6 +1,7 @@
 library(EBImage)
 library(stringr)
 library(pbapply)
+setwd("C:/Users/user/Google Drive/unilaptop/r projects/malaria")
 
 bad_files = list.files("cell_images/Parasitized",full.names = TRUE,pattern = "\\.png$")
 good_files = list.files("cell_images/Uninfected",full.names = TRUE,pattern = "\\.png$")
