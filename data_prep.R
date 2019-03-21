@@ -38,7 +38,6 @@ good_feature_matrix$label <- 0
 #concat the dataframes
 total_feature_matrix <- rbind(bad_feature_matrix,good_feature_matrix)
 save(total_feature_matrix,file="feature_matrix.Rda")
-
 dim(bad_feature_matrix)
 dim(good_feature_matrix)
 dim(total_feature_matrix)

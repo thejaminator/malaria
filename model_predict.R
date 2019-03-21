@@ -7,15 +7,17 @@ library(keras)
 library(pbapply)
 library(stringr)
 library(caret)
-library(MLmetrics, ggplot2,AUC,EBImage)
+library(MLmetrics)
+library(ggplot2)
+library(AUC)
+library(EBImage)
 
 set.seed(100)
 setwd("C:/Users/user/Google Drive/unilaptop/r projects/malaria")
 #load the stuff saved in train_model.R OR 
-model = load_model_hdf5("CNN.h5")
+model = load_model_hdf5("r_cnn.hdf5")
 #here we instead loaded the model we built in google colab cos its better
-
-model = load_model_hdf5("colab_model.h5")
+#model = load_model_hdf5("colab_model.h5")
 
 #load the image array
 load(file="test_array.Rda")
@@ -37,11 +39,12 @@ preds <- predictions[random,]
 probs <- as.vector(round(probabilities[random,], 2))
 
 
+
 par(mfrow = c(8, 8), mar = rep(0, 4))
 for(i in 1:length(random)){
   image(t(apply(test_array[random[i],,,], 2, rev)),
         col = gray.colors(12), axes = F)
-  legend("topright", legend = ifelse(preds[i] == 1, "Parasitized", "Uninfected"),
+  legend("topright", legend = ifelse(preds[i] == 1, "Infected", "Healthy"),
          text.col = ifelse(preds[i] == 0, 4, 2), bty = "n", text.font = 2)
   legend("topleft", legend = probs[i], bty = "n", col = "black",text.col = "#000000")
   legend("bottom",legend=ifelse(preds[i]==truth[i],"","WRONG"),bty="n",text.col="#000000",text.font=2)
@@ -52,7 +55,7 @@ predictions_factor = as.factor(predictions)
 ground_truth_factor = as.factor(test_y$label)
 
 cm_original = confusionMatrix(predictions_factor, ground_truth_factor, positive = "1", dnn = c("Prediction", "Reference"))
-
+cm_original
 dev.off()
 roc_obj = (roc(probabilities,ground_truth_factor))
 auc=auc(roc_obj)
@@ -103,5 +106,5 @@ cm_original
 #more visualizations
 plot(probabilities)
 class(probabilities)
-qplot(as.factor(probabilities), geom="count")
-
+df=as.data.frame(probabilities)
+qplot(x=V1,data=df,geom="histogram")
