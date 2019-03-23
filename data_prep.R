@@ -1,6 +1,8 @@
+#This file is to convert the images to a .csv called model.csv
 library(EBImage)
 library(stringr)
 library(pbapply)
+
 setwd("C:/Users/user/Google Drive/unilaptop/r projects/malaria")
 
 bad_files = list.files("cell_images/Parasitized",full.names = TRUE,pattern = "\\.png$")
@@ -38,7 +40,6 @@ good_feature_matrix$label <- 0
 #concat the dataframes
 total_feature_matrix <- rbind(bad_feature_matrix,good_feature_matrix)
 save(total_feature_matrix,file="feature_matrix.Rda")
-dim(bad_feature_matrix)
-dim(good_feature_matrix)
-dim(total_feature_matrix)
 
+#i saved as csv to upload to google colab, called model.csv (bad naming i know)
+write.csv(total_feature_matrix, 'model.csv')
