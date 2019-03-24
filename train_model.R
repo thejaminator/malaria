@@ -1,9 +1,12 @@
+#Initially we used this but then we ported it to python on google colab
+#because training the other base model comparisons was too computationally expensive on
+#a laptop
+
 setwd("C:/Users/user/Google Drive/unilaptop/r projects/malaria")
 
 #load the file we saved from the data_prep script
 load(file="feature_matrix.Rda")
-#i saved as csv to upload to google colab
-#write.csv(total_feature_matrix, 'model.csv')
+
 
 #you will probably have to install these packages
 library(reticulate)
@@ -23,7 +26,7 @@ py_config()
 #train test split
 # 70% train, 30% test split. IMPT TO RANDOMIZE OR ELSE ALL YOUR TEST DATA BELONGS TO ONE TYPE 
 total_feature_matrix <- total_feature_matrix[sample(1:nrow(total_feature_matrix)), ]
-
+#actually we dont need to randomly sample again since its already shuffled
 train_index <- sample(1:nrow(total_feature_matrix), 0.8 * nrow(total_feature_matrix))
 test_index <- setdiff(1:nrow(total_feature_matrix), train_index)
 
@@ -64,7 +67,7 @@ model %>%
   #first layer is the convultion layer
   #remember that our images were 50 x 50, grayscale so the input shape would be
   #50 x 50 x 1. If they were RGB( having colour) it would be 50 x 50 x3
-  layer_conv_2d(32,kernel_size = c(3,3), activation = 'relu', input_shape = c(50,50,1)) %>%
+  layer_conv_2d(16,kernel_size = c(3,3), activation = 'relu', input_shape = c(50,50,1)) %>%
   layer_max_pooling_2d(pool_size = c(2, 2)) %>%
   layer_conv_2d(16,kernel_size = c(3,3), activation = 'relu') %>%
   layer_max_pooling_2d(pool_size = c(2, 2)) %>%

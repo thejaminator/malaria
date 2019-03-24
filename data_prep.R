@@ -1,8 +1,9 @@
-#This file is to convert the images to a .csv called model.csv
+#This file is to convert the 50% of images to a .csv called half_data.csv for submission
 library(EBImage)
 library(stringr)
 library(pbapply)
 
+#set folder to the one containing the cell_images
 setwd("C:/Users/user/Google Drive/unilaptop/r projects/malaria")
 
 bad_files = list.files("cell_images/Parasitized",full.names = TRUE,pattern = "\\.png$")
@@ -41,5 +42,9 @@ good_feature_matrix$label <- 0
 total_feature_matrix <- rbind(bad_feature_matrix,good_feature_matrix)
 save(total_feature_matrix,file="feature_matrix.Rda")
 
-#i saved as csv to upload to google colab, called model.csv (bad naming i know)
-write.csv(total_feature_matrix, 'model.csv')
+load(file="feature_matrix.Rda")
+half_size = nrow(total_feature_matrix)/2
+sample_index <- sample(1:nrow(total_feature_matrix), half_size)
+half_feature_matrix = total_feature_matrix[sample_index,]
+#i saved as csv to upload to google colab, called half_data.csv (bad naming i know)
+write.csv(half_feature_matrix, 'half_data.csv')
